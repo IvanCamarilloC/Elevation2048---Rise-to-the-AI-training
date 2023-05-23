@@ -10,11 +10,6 @@ class Partida:
     pygame.font.init()
 
     # Define the game variables
-    game_over = 0
-    game_won = 0
-    current_score = 0
-    best_score = 0
-    matrix = np.array([[0 for x in range(4)] for y in range(4)]) 
     
     # TODO Crear variables up, down, left, right to know faster if a move can be done
 
@@ -36,14 +31,19 @@ class Partida:
     blue = (0, 0, 255)
     
 
-    
+    def getMatrix(self):
+        return self.matrix
+    def getScore(self):
+        return self.current_score
 
     # Define font 
     font = pygame.font.SysFont('Comic Sans MS', 30)
     def __init__(self):
-        # Define the screen size
-        
-        # Create the display window
+        self.game_over = 0
+        self.game_won = 0
+        self.current_score = 0
+        self.best_score = 0
+        self.matrix = np.array([[0 for x in range(4)] for y in range(4)]) 
         
         pygame.display.set_caption('2048') # Set the name of the display window
 
@@ -52,6 +52,7 @@ class Partida:
     # Create up down left right functions
     def up(self):
         change = False
+        points = 0
         #moves to right
         for i in range(4):
             arre=[0,0,0,0]
@@ -70,7 +71,7 @@ class Partida:
                 if iter1<4 and iter2<4:
                     if(arre[iter1]==arre[iter2]):
                         # Fix the line below
-                        change += arre[iter2] * 2
+                        points += arre[iter2] * 2
                         self.current_score = self.current_score + change
                         self.best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
@@ -90,10 +91,11 @@ class Partida:
                 if arre[j]!=self.matrix[i][j]:
                     change = True 
                 self.matrix[i][j]=arre[j]
-        return change
+        return points, change 
 
     def down(self): 
         change = False
+        points = 0
         #moves to right
         for i in range(4):
             arre=[0,0,0,0]
@@ -111,7 +113,7 @@ class Partida:
                     iter2+=1
                 if iter1<4 and iter2<4:
                     if(arre[iter1]==arre[iter2]):
-                        change += arre[iter2] * 2
+                        points += arre[iter2] * 2
                         self.current_score = self.current_score + change
                         best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
@@ -131,10 +133,11 @@ class Partida:
                 if arre[j]!=self.matrix[i][j]:
                     change = True
                 self.matrix[i][j]=arre[j]
-        return change
+        return points, change
 
     def left(self):
         change = False
+        points = 0
         #moves to right
         for i in range(4):
             arre=[0,0,0,0]
@@ -152,7 +155,7 @@ class Partida:
                     iter2+=1
                 if iter1<4 and iter2<4:
                     if(arre[iter1]==arre[iter2]):
-                        change += arre[iter2] * 2
+                        points += arre[iter2] * 2
                         self.current_score = self.current_score + change
                         best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
@@ -172,10 +175,11 @@ class Partida:
                 if arre[j]!=self.matrix[j][i]:
                     change = True
                 self.matrix[j][i]=arre[j]
-        return change
+        return points, change
         
     def right(self):
         change = False
+        points = 0
         #moves to right
         for i in range(4):
             arre=[0,0,0,0]
@@ -193,7 +197,7 @@ class Partida:
                     iter2+=1
                 if iter1<4 and iter2<4:
                     if(arre[iter1]==arre[iter2]):
-                        change += arre[iter2] * 2
+                        points += arre[iter2] * 2
                         self.current_score = self.current_score + change
                         self.best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
@@ -213,7 +217,7 @@ class Partida:
                 if arre[j]!=self.matrix[j][i]:
                     change = True
                 self.matrix[j][i]=arre[j]
-        return change
+        return points, change
 
 
     def addNumber(self):
@@ -235,7 +239,7 @@ class Partida:
                     self.matrix[i][j] = number
                     bandera = False
 
-    def checkGameOver(self):
+    def isOver(self):
         for i in range(4):
             for j in range(4):
                 if self.matrix[i][j] == 0:
@@ -325,26 +329,29 @@ class Partida:
             pygame.display.update()
 
     def play(self, jugada = ""):
+        cambios = False
         puntos = 0
         if isinstance(jugada, np.ndarray) or isinstance(jugada, list) == True:
             if jugada[0] == 1: 
-                puntos = self.up()
+                puntos, cambios = self.up()
             if jugada[1] == 1: 
-                puntos = self.down()
+                puntos, cambios = self.down()
             if jugada[2] == 1:
-                puntos = self.left()
+                puntos, cambios = self.left()
             if jugada[3] == 1:
-                puntos = self.right()
+                puntos, cambios = self.right()
+            if cambios:
+                self.addNumber()
         elif isinstance(jugada, str) == True:    
             if jugada == "up":
-                puntos = self.up()
+                puntos, cambios = self.up()
             elif jugada == "down":
-                puntos = self.down()
+                puntos, cambios = self.down()
             elif jugada == "left":
-                puntos = self.left()
+                puntos, cambios = self.left()
             elif jugada == "right":
-                puntos = self.right()
-            if puntos > 0:  
+                puntos, cambios = self.right()
+            if cambios:  
                 self.addNumber()
         return puntos
     
@@ -355,5 +362,3 @@ class Partida:
         self.addNumber()
         game_over = 0
         game_won = 0
-
-aux = Partida().show()
