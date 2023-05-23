@@ -1,5 +1,6 @@
 import instanciaPartida as ip
 import random
+import time
 
 class PartidaFactory:
     @staticmethod
@@ -26,7 +27,10 @@ for i in range(300):
     arr3 = [0, 0, 0, 0]
     arr3[random.randint(0, 3)] = 1
     partida3.play(arr3)
+    if i%20 == 0: 
+        partida.showUI()
+        time.sleep(1)
+        partida.closeUI()
+print(partida.best_score)
+
     
-print(partida.getMatrix())
-print(partida2.getMatrix())
-print(partida3.getMatrix())

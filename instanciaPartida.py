@@ -5,10 +5,6 @@ import sys
 import time
 
 class Partida:
-
-    pygame.init()
-    pygame.font.init()
-
     # Define the game variables
     
     # TODO Crear variables up, down, left, right to know faster if a move can be done
@@ -17,11 +13,6 @@ class Partida:
     # TODO Encapsular las variables de pygame en una funcion para que no sea necesario crearlas a menos que se vaya a jugar en la ventana
     # tambien cambiar el init para que solo se cree la ventana cuando se vaya a jugar
 
-    # Define screen
-    screen_width = 500
-    screen_height = 500 
-
-    screen = pygame.display.set_mode((screen_width, screen_height))
     # Define the colors
     white = (255, 255, 255)
     black = (0, 0, 0)
@@ -34,10 +25,8 @@ class Partida:
     def getMatrix(self):
         return self.matrix
     def getScore(self):
-        return self.current_score
-
-    # Define font 
-    font = pygame.font.SysFont('Comic Sans MS', 30)
+        return self.current_score 
+    
     def __init__(self):
         self.game_over = 0
         self.game_won = 0
@@ -45,7 +34,7 @@ class Partida:
         self.best_score = 0
         self.matrix = np.array([[0 for x in range(4)] for y in range(4)]) 
         
-        pygame.display.set_caption('2048') # Set the name of the display window
+        
 
         self.addNumber()
 
@@ -72,7 +61,7 @@ class Partida:
                     if(arre[iter1]==arre[iter2]):
                         # Fix the line below
                         points += arre[iter2] * 2
-                        self.current_score = self.current_score + change
+                        self.current_score = self.current_score + points
                         self.best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
                         change = True
@@ -114,7 +103,7 @@ class Partida:
                 if iter1<4 and iter2<4:
                     if(arre[iter1]==arre[iter2]):
                         points += arre[iter2] * 2
-                        self.current_score = self.current_score + change
+                        self.current_score = self.current_score + points
                         best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
                         change = True
@@ -156,7 +145,7 @@ class Partida:
                 if iter1<4 and iter2<4:
                     if(arre[iter1]==arre[iter2]):
                         points += arre[iter2] * 2
-                        self.current_score = self.current_score + change
+                        self.current_score = self.current_score + points
                         best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
                         change = True
@@ -198,7 +187,7 @@ class Partida:
                 if iter1<4 and iter2<4:
                     if(arre[iter1]==arre[iter2]):
                         points += arre[iter2] * 2
-                        self.current_score = self.current_score + change
+                        self.current_score = self.current_score + points
                         self.best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
                         change = True
@@ -252,81 +241,83 @@ class Partida:
                     return False
         return True
 
-    def show(self):
+    def showUI(self, caption = "2048", screen_width = 500, screen_height = 500, fps = 60):
+
+        pygame.init()
+        pygame.font.init()
+        self.font = pygame.font.SysFont('Comic Sans MS', 30)
+        pygame.display.set_caption(caption) # Set the name of the display window
+
+        self.screen = pygame.display.set_mode((screen_width, screen_height))
         # Make this window so that it only closes when i click the cross button
-        running = True
-        while running:
+    
 
-            # Fill the screen with white
-            self.screen.fill(self.white)
+        # Fill the screen with white
+        self.screen.fill(self.white)
 
-            # Draw the grid leaving 20% on the bottom for the score
-            for i in range(4):
-                for j in range(4):
-                    pygame.draw.rect(self.screen, self.gray, (i*100+50, j*100+5, 100, 100), 2)
+        # Draw the grid leaving 20% on the bottom for the score
+        for i in range(4):
+            for j in range(4):
+                pygame.draw.rect(self.screen, self.gray, (i*100+50, j*100+5, 100, 100), 2)
 
-            # Draw the numbers
-            for i in range(4):
-                for j in range(4):
-                    if self.matrix[i][j] != 0:   
-                        text = self.font.render(str(self.matrix[i][j]), True, self.black)
-                        self.screen.blit(text, (i*100 + 100 - text.get_width()/2, j*100 + 55 - text.get_height()/2))
+        # Draw the numbers
+        for i in range(4):
+            for j in range(4):
+                if self.matrix[i][j] != 0:   
+                    text = self.font.render(str(self.matrix[i][j]), True, self.black)
+                    self.screen.blit(text, (i*100 + 100 - text.get_width()/2, j*100 + 55 - text.get_height()/2))
 
-            # Draw the score
-            text = self.font.render('Score: ' + str(self.current_score), True, self.black)
-            self.screen.blit(text, (20, 520))
+        # Draw the score
+        text = self.font.render('Score: ' + str(self.current_score), True, self.black)
+        self.screen.blit(text, (20, 520))
 
-            # Draw the best score
-            text = self.font.render('Best: ' + str(self.best_score), True, self.black)
-            self.screen.blit(text, (400, 520))
+        # Draw the best score
+        text = self.font.render('Best: ' + str(self.best_score), True, self.black)
+        self.screen.blit(text, (400, 520))
 
-            # Draw the game over text
-            if self.game_over == 1:
-                text = self.font.render('Game Over', True, self.red)
-                self.screen.blit(text, (200, 250))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+        """"for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    self.play("up") 
+                if event.key == pygame.K_DOWN:
+                    self.play("down")
+                if event.key == pygame.K_LEFT:
+                    self.play("left")
+                if event.key == pygame.K_RIGHT:
+                    self.play("right")"""""
 
-            # Draw the game won text
-            if self.game_won == 1:
-                text = self.font.render('Game Won', True, self.green)
-                self.screen.blit(text, (200, 250))
-
-            # TODO: New up do not return true but a number that indicates the puntuation so if self.up() > 0 then addNumber()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
-                        self.play("up") 
-                    if event.key == pygame.K_DOWN:
-                        self.play("down")
-                    if event.key == pygame.K_LEFT:
-                        self.play("left")
-                    if event.key == pygame.K_RIGHT:
-                        self.play("right")
-
-            #Add a button to restart the game
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    if 200 < event.pos[0] < 300 and 410 < event.pos[1] < 460:
-                        matrix = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-                        current_score = 0
-                        self.addNumber()
-                        self.addNumber()
-                        game_over = 0
-                        game_won = 0
-            # Create the above button 
-            pygame.draw.rect(self.screen, self.green, (210, 410, 80, 50))
-            text = self.font.render('New', True, self.black)
-            self.screen.blit(text, (200 + 50 - text.get_width()/2, 410 + 25 - text.get_height()/2))
-            # Write the current score
-            text = self.font.render('Puntaje: ' + str(self.current_score), True, self.black)
-            self.screen.blit(text, (25, 415))
-            # Write the best score
-            text = self.font.render('Mejor: ' + str(self.best_score), True, self.black)
-            self.screen.blit(text, (325, 415))
+        #Add a button to restart the game
+        """"if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                if 200 < event.pos[0] < 300 and 410 < event.pos[1] < 460:
+                    matrix = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+                    current_score = 0
+                    self.addNumber()
+                    self.addNumber()
+                    game_over = 0
+                    game_won = 0"""""
+        # Create the above button 
+        pygame.draw.rect(self.screen, self.green, (210, 410, 80, 50))
+        text = self.font.render('New', True, self.black)
+        self.screen.blit(text, (200 + 50 - text.get_width()/2, 410 + 25 - text.get_height()/2))
+        # Write the current score
+        text = self.font.render('Puntaje: ' + str(self.current_score), True, self.black)
+        self.screen.blit(text, (25, 415))
+        # Write the best score
+        text = self.font.render('Mejor: ' + str(self.best_score), True, self.black)
+        self.screen.blit(text, (325, 415))
 
 
-            pygame.display.update()
+        pygame.display.update()
+
+    def closeUI(self):
+        pygame.quit()
+    
 
     def play(self, jugada = ""):
         cambios = False
@@ -362,3 +353,8 @@ class Partida:
         self.addNumber()
         game_over = 0
         game_won = 0
+
+    def set(self, matrix, current_score):
+        self.matrix = matrix
+        self.current_score = current_score
+    
