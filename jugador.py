@@ -24,6 +24,3 @@ def randomPlayer(tiempo = 0):
         partida.play(hotEncode(random.randint(0, 3)))
     partida.showUI()
     time.sleep(tiempo) 
-
-    
-randomPlayer(5)

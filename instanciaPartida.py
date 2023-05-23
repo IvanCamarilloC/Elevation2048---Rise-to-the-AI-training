@@ -359,6 +359,18 @@ class Partida:
                 puntos, cambios = self.right()
             if cambios:  
                 self.addNumber()
+        elif isinstance(jugada, int) or isinstance(jugada, float) == True:
+            if jugada == 1: 
+                puntos, cambios = self.up()
+            if jugada == 2:
+                puntos, cambios = self.down()
+            if jugada == 3:
+                puntos, cambios = self.left()
+            if jugada == 4:
+                puntos, cambios = self.right()
+            if cambios:
+                self.addNumber()
+
         return puntos
     
     def reset(self):
