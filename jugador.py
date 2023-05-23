@@ -1,10 +1,10 @@
-import instanciaPartida as part
+import instanciaPartida as ip
 import random
 import time
 class PartidaFactory:
     @staticmethod
     def create_partida():
-        partida = part.Partida()
+        partida = ip.Partida()
         return partida
 
 def hotEncode(pos):
@@ -20,7 +20,6 @@ def hotEncode(pos):
 def randomPlayer():
     partida = PartidaFactory.create_partida()
     while not partida.isOver():
-        print("Jugando") 
         partida.play(hotEncode(random.randint(0, 3)))
     partida.showUI()
 
