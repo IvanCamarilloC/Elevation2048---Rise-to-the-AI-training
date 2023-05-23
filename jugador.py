@@ -1,36 +1,31 @@
-import instanciaPartida as ip
+import instanciaPartida as part
 import random
 import time
-
 class PartidaFactory:
     @staticmethod
     def create_partida():
-        partida = ip.Partida()
+        partida = part.Partida()
         return partida
 
-partida = PartidaFactory.create_partida()
-partida2 = PartidaFactory.create_partida()
-partida3 = PartidaFactory.create_partida()
+def hotEncode(pos):
+    if pos == 0:
+        return [1, 0, 0, 0]
+    elif pos == 1:
+        return [0, 1, 0, 0]
+    elif pos == 2:
+        return [0, 0, 1, 0]
+    elif pos == 3:
+        return [0, 0, 0, 1]
+    return [0, 0, 0, 0]
+def randomPlayer():
+    partida = PartidaFactory.create_partida()
+    while not partida.isOver():
+        print("Jugando") 
+        partida.play(hotEncode(random.randint(0, 3)))
+    partida.showUI()
 
-for i in range(300): 
-    seed_value = random.randint(0, 1000000)  # Generate a unique seed value
-    random.seed(seed_value)  # Set the seed for random number generation
-    
-    arr = [0, 0, 0, 0]
-    arr[random.randint(0, 3)] = 1
-    partida.play(arr)
-    random.seed(seed_value + 1)  # Set the seed for the second instance
-    arr2 = [0, 0, 0, 0]
-    arr2[random.randint(0, 3)] = 1
-    partida2.play(arr2)
-    random.seed(seed_value + 2)  # Set the seed for the third instance
-    arr3 = [0, 0, 0, 0]
-    arr3[random.randint(0, 3)] = 1
-    partida3.play(arr3)
-    if i%20 == 0: 
-        partida.showUI()
-        time.sleep(1)
-        partida.closeUI()
-print(partida.best_score)
+print("Hola")
+randomPlayer()
+print("Adios")
 
     
