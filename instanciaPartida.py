@@ -1,14 +1,32 @@
 import pygame
+import numpy as np
 import random
 import sys
 import time
 
-pygame.init() # Initialize the pygame module
-pygame.font.init() # Initialize the font module
-
 class Partida:
+
+    pygame.init()
+    pygame.font.init()
+
+    # Define the game variables
+    game_over = 0
+    game_won = 0
+    current_score = 0
+    best_score = 0
+    matrix = np.array([[0 for x in range(4)] for y in range(4)]) 
+    
+    # TODO Crear variables up, down, left, right to know faster if a move can be done
+
+
+    # TODO Encapsular las variables de pygame en una funcion para que no sea necesario crearlas a menos que se vaya a jugar en la ventana
+    # tambien cambiar el init para que solo se cree la ventana cuando se vaya a jugar
+
     # Define screen
-    screen = None
+    screen_width = 500
+    screen_height = 500 
+
+    screen = pygame.display.set_mode((screen_width, screen_height))
     # Define the colors
     white = (255, 255, 255)
     black = (0, 0, 0)
@@ -16,29 +34,23 @@ class Partida:
     red = (255, 0, 0)
     green = (0, 255, 0)
     blue = (0, 0, 255)
-    # Define the game variables
-    game_over = 0
-    game_won = 0
-    current_score = 0
-    best_score = 0
-    matrix = [[0 for x in range(4)] for y in range(4)]
+    
+
+    
 
     # Define font 
     font = pygame.font.SysFont('Comic Sans MS', 30)
     def __init__(self):
         # Define the screen size
-        screen_width = 500
-        screen_height = 500 
-
+        
         # Create the display window
-        screen = pygame.display.set_mode((screen_width, screen_height))
+        
         pygame.display.set_caption('2048') # Set the name of the display window
 
         self.addNumber()
 
     # Create up down left right functions
     def up(self):
-        global current_score, best_score
         change = False
         #moves to right
         for i in range(4):
@@ -58,8 +70,9 @@ class Partida:
                 if iter1<4 and iter2<4:
                     if(arre[iter1]==arre[iter2]):
                         # Fix the line below
-                        current_score = current_score + arre[iter1]
-                        best_score=max(current_score,best_score)
+                        change += arre[iter2] * 2
+                        self.current_score = self.current_score + change
+                        self.best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
                         change = True
                         arre[iter2]=0
@@ -80,7 +93,6 @@ class Partida:
         return change
 
     def down(self): 
-        global current_score, best_score
         change = False
         #moves to right
         for i in range(4):
@@ -99,8 +111,9 @@ class Partida:
                     iter2+=1
                 if iter1<4 and iter2<4:
                     if(arre[iter1]==arre[iter2]):
-                        current_score= current_score + arre[iter1]
-                        best_score=max(current_score,best_score)
+                        change += arre[iter2] * 2
+                        self.current_score = self.current_score + change
+                        best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
                         change = True
                         arre[iter2]=0
@@ -121,7 +134,6 @@ class Partida:
         return change
 
     def left(self):
-        global current_score, best_score
         change = False
         #moves to right
         for i in range(4):
@@ -140,8 +152,9 @@ class Partida:
                     iter2+=1
                 if iter1<4 and iter2<4:
                     if(arre[iter1]==arre[iter2]):
-                        current_score= current_score + arre[iter1]
-                        best_score=max(current_score,best_score)
+                        change += arre[iter2] * 2
+                        self.current_score = self.current_score + change
+                        best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
                         change = True
                         arre[iter2]=0
@@ -162,7 +175,6 @@ class Partida:
         return change
         
     def right(self):
-        global current_score, best_score
         change = False
         #moves to right
         for i in range(4):
@@ -181,8 +193,9 @@ class Partida:
                     iter2+=1
                 if iter1<4 and iter2<4:
                     if(arre[iter1]==arre[iter2]):
-                        current_score= current_score + arre[iter1]
-                        best_score=max(current_score,best_score)
+                        change += arre[iter2] * 2
+                        self.current_score = self.current_score + change
+                        self.best_score=max(self.current_score,self.best_score)
                         arre[iter1]*=2
                         change = True
                         arre[iter2]=0
@@ -197,7 +210,7 @@ class Partida:
             #verify changes
             arre.reverse()
             for j in range(4):
-                if arre[j]!=self.fmatrix[j][i]:
+                if arre[j]!=self.matrix[j][i]:
                     change = True
                 self.matrix[j][i]=arre[j]
         return change
@@ -235,7 +248,7 @@ class Partida:
                     return False
         return True
 
-    def play(self):
+    def show(self):
         # Make this window so that it only closes when i click the cross button
         running = True
         while running:
@@ -251,48 +264,42 @@ class Partida:
             # Draw the numbers
             for i in range(4):
                 for j in range(4):
-                    if matrix[i][j] != 0:   
-                        text = self.font.render(str(matrix[i][j]), True, self.black)
+                    if self.matrix[i][j] != 0:   
+                        text = self.font.render(str(self.matrix[i][j]), True, self.black)
                         self.screen.blit(text, (i*100 + 100 - text.get_width()/2, j*100 + 55 - text.get_height()/2))
 
             # Draw the score
-            text = self.font.render('Score: ' + str(current_score), True, self.black)
+            text = self.font.render('Score: ' + str(self.current_score), True, self.black)
             self.screen.blit(text, (20, 520))
 
             # Draw the best score
-            text = self.font.render('Best: ' + str(best_score), True, self.black)
+            text = self.font.render('Best: ' + str(self.best_score), True, self.black)
             self.screen.blit(text, (400, 520))
 
             # Draw the game over text
-            if game_over == 1:
+            if self.game_over == 1:
                 text = self.font.render('Game Over', True, self.red)
                 self.screen.blit(text, (200, 250))
 
             # Draw the game won text
-            if game_won == 1:
+            if self.game_won == 1:
                 text = self.font.render('Game Won', True, self.green)
                 self.screen.blit(text, (200, 250))
 
+            # TODO: New up do not return true but a number that indicates the puntuation so if self.up() > 0 then addNumber()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.KEYDOWN:
-                    # Make an event for when i press the up key
                     if event.key == pygame.K_UP:
-                        if self.up():        
-                            self.addNumber()
-                    # Make an event for when i press the down key
+                        self.play("up") 
                     if event.key == pygame.K_DOWN:
-                        if self.down(): 
-                            self.addNumber()
-                    # Make an event for when i press the left key
+                        self.play("down")
                     if event.key == pygame.K_LEFT:
-                        if self.left(): 
-                            self.addNumber()
-                    # Make an event for when i press the right key
+                        self.play("left")
                     if event.key == pygame.K_RIGHT:
-                        if self.right():
-                            self.addNumber()
+                        self.play("right")
+
             #Add a button to restart the game
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -308,23 +315,35 @@ class Partida:
             text = self.font.render('New', True, self.black)
             self.screen.blit(text, (200 + 50 - text.get_width()/2, 410 + 25 - text.get_height()/2))
             # Write the current score
-            text = self.font.render('Puntaje: ' + str(current_score), True, self.black)
+            text = self.font.render('Puntaje: ' + str(self.current_score), True, self.black)
             self.screen.blit(text, (25, 415))
             # Write the best score
-            text = self.font.render('Mejor: ' + str(best_score), True, self.black)
+            text = self.font.render('Mejor: ' + str(self.best_score), True, self.black)
             self.screen.blit(text, (325, 415))
-            # Check if the game is over	
-            if self.checkGameOver():
-                self.screen.fill(self.red)
-                running = False
 
 
             pygame.display.update()
 
+    def play(self, jugada = ""):
+        puntos = 0
+        if jugada == "up":
+            puntos = self.up()
+        elif jugada == "down":
+            puntos = self.down()
+        elif jugada == "left":
+            puntos = self.left()
+        elif jugada == "right":
+            puntos = self.right()
+        if puntos > 0:  
+            self.addNumber()
+        return puntos
+    
     def reset(self):
-        matrix = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+        matrix = np.array([[0 for x in range(4)] for y in range(4)])
         current_score = 0
         self.addNumber()
         self.addNumber()
         game_over = 0
         game_won = 0
+
+aux = Partida().show()
