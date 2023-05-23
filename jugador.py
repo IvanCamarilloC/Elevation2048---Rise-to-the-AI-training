@@ -25,6 +25,5 @@ def randomPlayer(tiempo = 0):
     partida.showUI()
     time.sleep(tiempo) 
 
-randomPlayer(0)
-
     
+randomPlayer(5)

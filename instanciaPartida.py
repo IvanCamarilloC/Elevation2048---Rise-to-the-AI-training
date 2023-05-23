@@ -1,6 +1,7 @@
 import pygame
 import numpy as np
 import random
+import math
 import sys
 import time
 
@@ -24,8 +25,22 @@ class Partida:
 
     def getMatrix(self):
         return self.matrix
+    
+    def getHotEncodedMatrix(self):
+        shape = (4, 4, 16)
+        mat = np.zeros(shape)
+        for i in range(4):
+            for j in range(4):
+                mat[i][j][math.log2(self.matrix[i][j])] = 1
+        return mat
+    
+    def getHotEncodedMatrixFlatten(self):
+         return np.ndarray.flatten(self.getHotEncodedMatrix(self))
+
     def getScore(self):
         return self.current_score 
+    def getMaxTile(self): 
+        return self.best_score
     
     def __init__(self):
         self.game_over = 0
@@ -62,7 +77,7 @@ class Partida:
                         # Fix the line below
                         points += arre[iter2] * 2
                         self.current_score = self.current_score + points
-                        self.best_score=max(self.current_score,self.best_score)
+                        self.best_score=max(arre[iter2]*2,self.best_score)
                         arre[iter1]*=2
                         change = True
                         arre[iter2]=0
@@ -104,7 +119,7 @@ class Partida:
                     if(arre[iter1]==arre[iter2]):
                         points += arre[iter2] * 2
                         self.current_score = self.current_score + points
-                        best_score=max(self.current_score,self.best_score)
+                        self.best_score=max(arre[iter2]*2,self.best_score)
                         arre[iter1]*=2
                         change = True
                         arre[iter2]=0
@@ -146,7 +161,7 @@ class Partida:
                     if(arre[iter1]==arre[iter2]):
                         points += arre[iter2] * 2
                         self.current_score = self.current_score + points
-                        best_score=max(self.current_score,self.best_score)
+                        self.best_score=max(arre[iter2]*2,self.best_score)
                         arre[iter1]*=2
                         change = True
                         arre[iter2]=0
@@ -188,7 +203,7 @@ class Partida:
                     if(arre[iter1]==arre[iter2]):
                         points += arre[iter2] * 2
                         self.current_score = self.current_score + points
-                        self.best_score=max(self.current_score,self.best_score)
+                        self.best_score=max(arre[iter2]*2,self.best_score)
                         arre[iter1]*=2
                         change = True
                         arre[iter2]=0
