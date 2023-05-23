@@ -326,16 +326,26 @@ class Partida:
 
     def play(self, jugada = ""):
         puntos = 0
-        if jugada == "up":
-            puntos = self.up()
-        elif jugada == "down":
-            puntos = self.down()
-        elif jugada == "left":
-            puntos = self.left()
-        elif jugada == "right":
-            puntos = self.right()
-        if puntos > 0:  
-            self.addNumber()
+        if isinstance(jugada, np.ndarray) or isinstance(jugada, list) == True:
+            if jugada[0] == 1: 
+                puntos = self.up()
+            if jugada[1] == 1: 
+                puntos = self.down()
+            if jugada[2] == 1:
+                puntos = self.left()
+            if jugada[3] == 1:
+                puntos = self.right()
+        elif isinstance(jugada, str) == True:    
+            if jugada == "up":
+                puntos = self.up()
+            elif jugada == "down":
+                puntos = self.down()
+            elif jugada == "left":
+                puntos = self.left()
+            elif jugada == "right":
+                puntos = self.right()
+            if puntos > 0:  
+                self.addNumber()
         return puntos
     
     def reset(self):
