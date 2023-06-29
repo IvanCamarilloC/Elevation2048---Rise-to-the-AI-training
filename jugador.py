@@ -24,3 +24,6 @@ def randomPlayer(tiempo = 0):
         partida.play(hotEncode(random.randint(0, 3)))
     partida.showUI()
     time.sleep(tiempo) 
+
+#if __name__ == "__main__":
+#    randomPlayer(1)

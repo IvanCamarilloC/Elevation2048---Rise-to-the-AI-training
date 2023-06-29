@@ -13,14 +13,6 @@ class Partida:
 
     # TODO Encapsular las variables de pygame en una funcion para que no sea necesario crearlas a menos que se vaya a jugar en la ventana
     # tambien cambiar el init para que solo se cree la ventana cuando se vaya a jugar
-
-    # Define the colors
-    white = (255, 255, 255)
-    black = (0, 0, 0)
-    gray = (128, 128, 128)
-    red = (255, 0, 0)
-    green = (0, 255, 0)
-    blue = (0, 0, 255)
     
 
     def getMatrix(self):
@@ -31,11 +23,14 @@ class Partida:
         mat = np.zeros(shape)
         for i in range(4):
             for j in range(4):
-                mat[i][j][math.log2(self.matrix[i][j])] = 1
+                if self.matrix[i][j] == 0:
+                    mat[i][j][0] = 1
+                else: 
+                    mat[i][j][int(math.log2(self.matrix[i][j]))+1] = 1
         return mat
     
     def getHotEncodedMatrixFlatten(self):
-         return np.ndarray.flatten(self.getHotEncodedMatrix(self))
+         return np.ndarray.flatten(self.getHotEncodedMatrix())
 
     def getScore(self):
         return self.current_score 
@@ -258,6 +253,12 @@ class Partida:
 
     def showUI(self, caption = "2048", screen_width = 500, screen_height = 500, fps = 60):
 
+        white = (255, 255, 255)
+        black = (0, 0, 0)
+        gray = (128, 128, 128)
+        red = (255, 0, 0)
+        green = (0, 255, 0)
+        blue = (0, 0, 255)
         pygame.init()
         pygame.font.init()
         self.font = pygame.font.SysFont('Comic Sans MS', 30)
@@ -268,26 +269,26 @@ class Partida:
     
 
         # Fill the screen with white
-        self.screen.fill(self.white)
+        self.screen.fill(white)
 
         # Draw the grid leaving 20% on the bottom for the score
         for i in range(4):
             for j in range(4):
-                pygame.draw.rect(self.screen, self.gray, (i*100+50, j*100+5, 100, 100), 2)
+                pygame.draw.rect(self.screen, gray, (i*100+50, j*100+5, 100, 100), 2)
 
         # Draw the numbers
         for i in range(4):
             for j in range(4):
                 if self.matrix[i][j] != 0:   
-                    text = self.font.render(str(self.matrix[i][j]), True, self.black)
+                    text = self.font.render(str(self.matrix[i][j]), True, black)
                     self.screen.blit(text, (i*100 + 100 - text.get_width()/2, j*100 + 55 - text.get_height()/2))
 
         # Draw the score
-        text = self.font.render('Score: ' + str(self.current_score), True, self.black)
+        text = self.font.render('Score: ' + str(self.current_score), True, black)
         self.screen.blit(text, (20, 520))
 
         # Draw the best score
-        text = self.font.render('Best: ' + str(self.best_score), True, self.black)
+        text = self.font.render('Best: ' + str(self.best_score), True, black)
         self.screen.blit(text, (400, 520))
 
         for event in pygame.event.get():
@@ -317,14 +318,14 @@ class Partida:
                     game_over = 0
                     game_won = 0"""""
         # Create the above button 
-        pygame.draw.rect(self.screen, self.green, (210, 410, 80, 50))
-        text = self.font.render('New', True, self.black)
+        pygame.draw.rect(self.screen, green, (210, 410, 80, 50))
+        text = self.font.render('New', True, black)
         self.screen.blit(text, (200 + 50 - text.get_width()/2, 410 + 25 - text.get_height()/2))
         # Write the current score
-        text = self.font.render('Puntaje: ' + str(self.current_score), True, self.black)
+        text = self.font.render('Puntaje: ' + str(self.current_score), True, black)
         self.screen.blit(text, (25, 415))
         # Write the best score
-        text = self.font.render('Mejor: ' + str(self.best_score), True, self.black)
+        text = self.font.render('Mejor: ' + str(self.best_score), True, black)
         self.screen.blit(text, (325, 415))
 
 
@@ -360,26 +361,26 @@ class Partida:
             if cambios:  
                 self.addNumber()
         elif isinstance(jugada, int) or isinstance(jugada, float) == True:
-            if jugada == 1: 
+            if jugada == 0: 
                 puntos, cambios = self.up()
-            if jugada == 2:
+            if jugada == 1:
                 puntos, cambios = self.down()
-            if jugada == 3:
+            if jugada == 2:
                 puntos, cambios = self.left()
-            if jugada == 4:
+            if jugada == 3:
                 puntos, cambios = self.right()
             if cambios:
                 self.addNumber()
 
-        return puntos
+        return self.getHotEncodedMatrixFlatten(), puntos, self.isOver(), cambios
     
     def reset(self):
-        matrix = np.array([[0 for x in range(4)] for y in range(4)])
-        current_score = 0
+        self.matrix = np.array([[0 for x in range(4)] for y in range(4)])
+        self.current_score = 0
         self.addNumber()
         self.addNumber()
-        game_over = 0
-        game_won = 0
+        self.game_over = 0
+        self.game_won = 0
 
     def set(self, matrix, current_score):
         self.matrix = matrix
